@@ -1,11 +1,11 @@
 use std::marker::PhantomData;
 
 
-#[cfg(feature = "serde_derive")]
-include!("holder_types.in.rs");
-
-#[cfg(feature = "serde_codegen")]
-include!(concat!(env!("OUT_DIR"), "/holder_types.rs"));
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Holder<T, K: HolderKey> {
+    pub items: Vec<T>,
+    pub phantom: PhantomData<K>
+}
 
 pub trait HolderKey {
     fn new(usize) -> Self;
