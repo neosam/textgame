@@ -72,15 +72,13 @@ pub struct RoomGame<'a> {
     pub game: &'a Game
 }
 impl<'a> RoomGame<'a> {
-    pub fn room_exits(&'a self) -> Box<Iterator<Item=&'a Exit> + 'a> {
+    pub fn room_exits(&'a self) -> impl Iterator<Item=&'a Exit> + 'a {
         Box::new(self.room.exits.iter())
     }
-    pub fn actors(&'a self) -> Box<Iterator<Item=(ActorKey, &'a Actor)> + 'a> {
-        Box::new(
-            self.room.actors
-                .iter()
-                .map(move | actor_key | (*actor_key, self.game.actors.get(*actor_key)))
-        )
+    pub fn actors(&'a self) -> impl Iterator<Item=(ActorKey, &'a Actor)> + 'a {
+        self.room.actors
+            .iter()
+            .map(move | actor_key | (*actor_key, self.game.actors.get(*actor_key)))
     }
 }
 
