@@ -10,6 +10,9 @@ use std::collections::HashMap;
 use std::mem;
 use serde_json;
 
+use room::*;
+use base::*;
+
 pub type CommandFn = Box<Fn(&mut Game) -> result::Result<bool, Box<Error>>>;
 
 pub fn input_string(prompt: &str) -> result::Result<String, Box<Error>> {

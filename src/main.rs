@@ -7,10 +7,14 @@ extern crate serde_json;
 pub mod gameerror;
 #[macro_use]
 pub mod holder;
+pub mod base;
+pub mod actor;
+pub mod room;
 pub mod game;
 pub mod terminal;
 
 use game::*;
+use actor::*;
 use terminal::*;
 
 fn main() {

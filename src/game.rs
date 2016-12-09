@@ -1,35 +1,9 @@
 use holder::*;
+use actor::*;
+use room::*;
+use base::{RoomKey, ActorKey, Watchable};
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Container {
-    pub value: u32,
-    pub max: u32
-}
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Actor {
-    pub name: String,
-    pub health: Container,
-    pub visible: bool,
-    pub display: bool
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Exit {
-    pub label: String,
-    pub room_key: RoomKey
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Room {
-    pub title: String,
-    pub description: String,
-    pub exits: Vec<Exit>,
-    pub actors: Vec<ActorKey>
-}
-
-key_gen!(RoomKey);
-key_gen!(ActorKey);
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Game {
@@ -37,56 +11,6 @@ pub struct Game {
     pub player_ref: ActorKey,
     pub rooms: Holder<Room, RoomKey>,
     pub actors: Holder<Actor, ActorKey>
-}
-
-impl Actor {
-    pub fn new() -> Actor {
-        Actor {
-            name: "".to_string(),
-            visible: true,
-            display: false,
-            health: Container {
-                value: 0,
-                max: 0
-            }
-        }
-    }
-}
-
-impl Room {
-    pub fn new() -> Room {
-        Room {
-            title: "".to_string(),
-            description: "".to_string(),
-            exits: Vec::new(),
-            actors: Vec::new()
-        }
-    }
-    pub fn with_title(title: String) -> Self {
-        Room {
-            title: title,
-            description: "".to_string(),
-            exits: Vec::new(),
-            actors: Vec::new()
-        }
-    }
-
-    pub fn add_exit(&mut self, exit: Exit) {
-        self.exits.push(exit);
-    }
-
-    pub fn get_exit(&self, direction: String) -> Option<&Exit> {
-        for exit in self.exits.iter() {
-            if exit.label == direction {
-                return Some(exit)
-            }
-        }
-        None
-    }
-}
-
-pub trait Watchable {
-    fn watch(&self) -> String;
 }
 
 impl Game {
