@@ -13,7 +13,7 @@ pub struct Exit {
 pub struct Room {
     pub title: String,
     pub description: String,
-    pub exits: Vec<Exit>,
+    pub exits: HashMap<String, Exit>,
     pub actors: HashMap<String, Actor>,
     pub items: HashMap<String, Item>
 }
@@ -26,16 +26,11 @@ impl Room {
     }
 
     pub fn add_exit(&mut self, exit: Exit) {
-        self.exits.push(exit);
+        self.exits.insert(exit.label.clone(), exit);
     }
 
     pub fn get_exit(&self, direction: String) -> Option<&Exit> {
-        for exit in self.exits.iter() {
-            if exit.label == direction {
-                return Some(exit)
-            }
-        }
-        None
+        self.exits.get(&direction)
     }
 
     pub fn add_item(&mut self, item: Item) {

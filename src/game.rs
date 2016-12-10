@@ -50,7 +50,7 @@ impl Game {
         let actor: Actor = {
             let mut from_room = self.room_mut(from_room_key);
             from_room.actors.remove(&actor_key)
-                .ok_or(GameError::GeneralError("From room key not found".to_string()))?
+                .ok_or(GameError::GeneralError("Actor in from room not found".to_string()))?
         };
         let mut to_room = self.room_mut(to_room_key);
         to_room.add_actor(actor);
@@ -88,8 +88,8 @@ impl Watchable for Room {
         if !self.exits.is_empty() {
             res.push_str("Exits: ");
             res.push_str(
-                &self.exits.iter().fold(String::new(), |mut acc, exit| {
-                    acc.push_str(&exit.label);
+                &self.exits.iter().fold(String::new(), |mut acc, (key, _) | {
+                    acc.push_str(key);
                     acc.push_str(" ");
                     acc
                 })

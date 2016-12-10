@@ -103,7 +103,7 @@ pub fn cmd_add_exit() -> CommandFn {
         let exit_label = input_string("Exit label: ")?;
         let room_id = input_string("Room key:  ")?;
         let room_id: usize = room_id.parse()?;
-        game.player_room_mut().exits.push(Exit {
+        game.player_room_mut().add_exit(Exit {
             label: exit_label,
             room_key: RoomKey::new(room_id)
         });
@@ -122,17 +122,14 @@ pub fn cmd_move_player() -> CommandFn {
     Box::new(|mut game| {
         let direction = input_string("Exit name: ")?;
         let room_key = {
-            let exit = game.player_room().get_exit(direction);
-            if exit.is_none() {
-                return Err(Box::new(GameError::GeneralError("Exit not found".to_string())));
-            }
-            let exit = exit.unwrap();
+            let exit = game.player_room().get_exit(direction)
+                .ok_or(GameError::GeneralError("Exit not found".to_string()))?;
             let dest_room_key = exit.room_key;
             dest_room_key
         };
         let player_key = game.player_ref.clone();
         let from_room_key = game.room_ref;
-        game.warp_actor(player_key, from_room_key, room_key);
+        game.warp_actor(player_key, from_room_key, room_key)?;
         game.room_ref = room_key;
         Ok(false)
     })
