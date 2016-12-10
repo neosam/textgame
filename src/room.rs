@@ -46,6 +46,9 @@ impl Room {
     pub fn add_actor(&mut self, actor: Actor) {
         self.actors.insert(actor.keyword.clone(), actor);
     }
+    pub fn get_actor(&self, keyword: &str) -> Option<&Actor> {
+        self.actors.get(keyword)
+    }
 
     pub fn actor_take(&mut self, actor_key: &str, item_key: &str) -> Result<(), Box<Error>> {
         if !self.actors.contains_key(actor_key) {

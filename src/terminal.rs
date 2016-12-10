@@ -92,6 +92,16 @@ pub fn cmd_look_item() -> CommandFn {
         Ok(false)
     })
 }
+pub fn cmd_look_actor() -> CommandFn {
+    Box::new(|game| {
+        let keyword = input_string("Actor: ")?;
+        let room: &Room = game.player_room();
+        let actor = room.get_actor(&keyword)
+            .ok_or(GameError::GeneralError("Keyword not found".to_string()))?;
+        println!("{}", actor.watch());
+        Ok(false)
+    })
+}
 pub fn cmd_room_ref() -> CommandFn {
     Box::new(|game| {
         println!("Room ID: {}", game.room_ref.get());

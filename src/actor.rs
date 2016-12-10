@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use item::Item;
+use base::Watchable;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Container {
@@ -30,5 +31,26 @@ pub struct Actor {
 impl Actor {
     pub fn add_item(&mut self, item: Item) {
         self.items.insert(item.keyword.clone(), item);
+    }
+}
+
+impl Watchable for Actor {
+    fn watch(&self) -> String {
+        let mut res = String::with_capacity(1024);
+        res.push_str(&self.name);
+        res.push('\n');
+        if !self.items.is_empty() {
+            res.push_str("Items: ");
+            res.push_str(
+                &self.items.iter()
+                    .fold(String::new(), | mut acc, (key, _) | {
+                        acc.push_str(key);
+                        acc.push(' ');
+                        acc
+                    })
+            );
+            res.push('\n');
+        }
+        res
     }
 }
