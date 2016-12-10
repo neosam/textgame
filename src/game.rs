@@ -111,6 +111,15 @@ impl<'a> Watchable for RoomGame<'a> {
         res.push_str("\n");
         res.push_str(&self.room.description);
         res.push_str("\n");
+        res.push_str("Items: ");
+        res.push_str(
+            &self.room.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
+                acc.push_str(keyword);
+                acc.push('\n');
+                acc
+            })
+        );
+        res.push('\n');
         res.push_str(
             &self.actors().fold(String::new(), | mut acc, (_, actor) | {
                 acc.push_str(&actor.name.to_string()); acc

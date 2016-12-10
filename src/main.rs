@@ -9,6 +9,7 @@ pub mod gameerror;
 #[macro_use]
 pub mod holder;
 pub mod base;
+pub mod item;
 pub mod actor;
 pub mod room;
 pub mod game;
@@ -17,6 +18,7 @@ pub mod terminal;
 use game::*;
 use actor::*;
 use terminal::*;
+use item::Item;
 
 fn main() {
     let mut game = Game::new();
@@ -28,6 +30,12 @@ fn main() {
         let mut actor = Actor::new();
         actor.name = "Hero".to_string();
         game_room.add_actor(actor);
+        let mut item = Item::default();
+        item.keyword = "doll".to_string();
+        item.label = "A doll".to_string();
+        item.description = "A beautiful doll".to_string();
+        game_room.room().add_item(item);
+
     }
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());

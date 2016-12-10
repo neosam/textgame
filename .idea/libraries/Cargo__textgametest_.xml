@@ -1,17 +1,17 @@
 <component name="libraryTable">
   <library name="Cargo &lt;textgametest&gt;">
     <CLASSES>
+      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/num-traits-0.1.36" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/itoa-0.1.1" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_derive-0.8.19" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-0.3.10" />
-      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_codegen-0.8.19" />
-      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/num-traits-0.1.36" />
-      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/dtoa-0.2.2" />
-      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/syn-0.10.3" />
-      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_json-0.8.4" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/unicode-xid-0.0.3" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde-0.8.19" />
+      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/dtoa-0.2.2" />
       <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_codegen_internals-0.11.1" />
+      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/syn-0.10.3" />
+      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_json-0.8.4" />
+      <root url="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_codegen-0.8.19" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

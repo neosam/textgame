@@ -1,5 +1,7 @@
 use base::RoomKey;
 use base::ActorKey;
+use std::collections::HashMap;
+use item::Item;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Exit {
@@ -12,7 +14,8 @@ pub struct Room {
     pub title: String,
     pub description: String,
     pub exits: Vec<Exit>,
-    pub actors: Vec<ActorKey>
+    pub actors: Vec<ActorKey>,
+    pub items: HashMap<String, Item>
 }
 
 impl Room {
@@ -21,7 +24,8 @@ impl Room {
             title: "".to_string(),
             description: "".to_string(),
             exits: Vec::new(),
-            actors: Vec::new()
+            actors: Vec::new(),
+            items: HashMap::new()
         }
     }
     pub fn with_title(title: String) -> Self {
@@ -29,7 +33,8 @@ impl Room {
             title: title,
             description: "".to_string(),
             exits: Vec::new(),
-            actors: Vec::new()
+            actors: Vec::new(),
+            items: HashMap::new()
         }
     }
 
@@ -44,5 +49,9 @@ impl Room {
             }
         }
         None
+    }
+
+    pub fn add_item(&mut self, item: Item) {
+        self.items.insert(item.keyword.clone(), item);
     }
 }
