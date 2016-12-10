@@ -6,24 +6,21 @@ pub struct Container {
     pub max: u32
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+/// Value should be at least 1 to avoid immediate death.
+impl Default for Container {
+    fn default() -> Self {
+        Container {
+            value: 1,
+            max: 1
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Actor {
+    pub keyword: String,
     pub name: String,
     pub health: Container,
     pub visible: bool,
     pub display: bool
-}
-
-impl Actor {
-    pub fn new() -> Actor {
-        Actor {
-            name: "".to_string(),
-            visible: true,
-            display: false,
-            health: Container {
-                value: 0,
-                max: 0
-            }
-        }
-    }
 }

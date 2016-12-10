@@ -27,7 +27,7 @@ fn main() {
         let mut game_room = game.room_mut(room_ref);
         game_room.room().title = "Test Room".to_string();
         game_room.room().description = "This is a room".to_string();
-        let mut actor = Actor::new();
+        let mut actor = Actor::default();
         actor.name = "Hero".to_string();
         game_room.add_actor(actor);
         let mut item = Item::default();

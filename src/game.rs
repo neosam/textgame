@@ -15,10 +15,10 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Self {
-        let mut room_holder: Holder<Room, RoomKey> = Holder::new();
-        let mut actor_holder: Holder<Actor, ActorKey> = Holder::new();
-        let room_ref = room_holder.add(Room::new());
-        let actor_ref = actor_holder.add(Actor::new());
+        let mut room_holder: Holder<Room, RoomKey> = Holder::default();
+        let mut actor_holder: Holder<Actor, ActorKey> = Holder::default();
+        let room_ref = room_holder.add(Room::default());
+        let actor_ref = actor_holder.add(Actor::default());
         Game {
             room_ref: room_ref,
             player_ref: actor_ref,

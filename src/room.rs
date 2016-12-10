@@ -9,7 +9,7 @@ pub struct Exit {
     pub room_key: RoomKey
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Room {
     pub title: String,
     pub description: String,
@@ -19,23 +19,10 @@ pub struct Room {
 }
 
 impl Room {
-    pub fn new() -> Room {
-        Room {
-            title: "".to_string(),
-            description: "".to_string(),
-            exits: Vec::new(),
-            actors: Vec::new(),
-            items: HashMap::new()
-        }
-    }
     pub fn with_title(title: String) -> Self {
-        Room {
-            title: title,
-            description: "".to_string(),
-            exits: Vec::new(),
-            actors: Vec::new(),
-            items: HashMap::new()
-        }
+        let mut room = Room::default();
+        room.title = title;
+        room
     }
 
     pub fn add_exit(&mut self, exit: Exit) {
