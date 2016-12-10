@@ -61,4 +61,15 @@ impl Room {
         self.actors.get_mut(actor_key).unwrap().add_item(item);
         Ok(())
     }
+
+    pub fn actor_drop(&mut self, actor_key: &str, item_key: &str) -> Result<(), Box<Error>> {
+        let item = {
+            let actor = self.actors.get_mut(actor_key)
+                .ok_or(GameError::GeneralError("Actor not found".to_string()))?;
+            actor.items.remove(item_key)
+                .ok_or(GameError::GeneralError("Item not found".to_string()))?
+        };
+        self.add_item(item);
+        Ok(())
+    }
 }

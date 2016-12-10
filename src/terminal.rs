@@ -155,6 +155,17 @@ pub fn cmd_take() -> CommandFn {
         Ok(false)
     })
 }
+pub fn cmd_drop() -> CommandFn {
+    Box::new(|mut game| {
+        let item_key = input_string("Item: ")?;
+        let player_ref = game.player_ref.clone();
+        game.player_room_mut().actor_drop(
+            &player_ref,
+            &item_key
+        )?;
+        Ok(false)
+    })
+}
 
 pub fn cmd_edit_room() -> CommandFn {
     Box::new(|mut game| {
