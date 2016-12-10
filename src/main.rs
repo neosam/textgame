@@ -35,7 +35,6 @@ fn main() {
         item.label = "A doll".to_string();
         item.description = "A beautiful doll".to_string();
         game_room.room().add_item(item);
-
     }
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());

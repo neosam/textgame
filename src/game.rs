@@ -111,28 +111,37 @@ impl<'a> Watchable for RoomGame<'a> {
         res.push_str("\n");
         res.push_str(&self.room.description);
         res.push_str("\n");
-        res.push_str("Items: ");
-        res.push_str(
-            &self.room.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
-                acc.push_str(keyword);
-                acc.push('\n');
-                acc
-            })
-        );
-        res.push('\n');
-        res.push_str(
-            &self.actors().fold(String::new(), | mut acc, (_, actor) | {
-                acc.push_str(&actor.name.to_string()); acc
-            })
-        );
-        res.push_str("\n");
-        res.push_str(
-            &self.room.exits.iter().fold(String::new(), | mut acc, exit | {
-                acc.push_str(&exit.label);
-                acc.push_str(" ");
-                acc
-            })
-        );
+        if !self.room.items.is_empty() {
+            res.push_str("Items: ");
+            res.push_str(
+                &self.room.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
+                    acc.push_str(keyword);
+                    acc
+                })
+            );
+            res.push('\n');
+        }
+        if !self.room.actors.is_empty() {
+            res.push_str("Actors: ");
+            res.push_str(
+                &self.actors().fold(String::new(), |mut acc, (_, actor)| {
+                    acc.push_str(&actor.name.to_string());
+                    acc
+                })
+            );
+            res.push('\n');
+        }
+        if !self.room.exits.is_empty() {
+            res.push_str("Exits: ");
+            res.push_str(
+                &self.room.exits.iter().fold(String::new(), |mut acc, exit| {
+                    acc.push_str(&exit.label);
+                    acc.push_str(" ");
+                    acc
+                })
+            );
+            res.push('\n');
+        }
         res
     }
 }
