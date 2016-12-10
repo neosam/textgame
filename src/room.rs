@@ -2,6 +2,9 @@ use base::RoomKey;
 use std::collections::HashMap;
 use item::Item;
 use actor::Actor;
+use gameerror::GameError;
+use std::result::Result;
+use std::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Exit {
@@ -42,5 +45,17 @@ impl Room {
 
     pub fn add_actor(&mut self, actor: Actor) {
         self.actors.insert(actor.keyword.clone(), actor);
+    }
+
+    pub fn actor_take(&mut self, actor_key: &str, item_key: &str) -> Result<(), Box<Error>> {
+        if !self.actors.contains_key(actor_key) {
+            return Err(Box::new(GameError::GeneralError("Actor key not found".to_string())));
+        }
+        if !self.items.contains_key(item_key) {
+            return Err(Box::new(GameError::GeneralError("Item key not found".to_string())));
+        }
+        let item = self.items.remove(item_key).unwrap();
+        self.actors.get_mut(actor_key).unwrap().add_item(item);
+        Ok(())
     }
 }

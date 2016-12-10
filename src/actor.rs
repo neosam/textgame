@@ -1,4 +1,5 @@
-
+use std::collections::HashMap;
+use item::Item;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Container {
@@ -22,5 +23,12 @@ pub struct Actor {
     pub name: String,
     pub health: Container,
     pub visible: bool,
-    pub display: bool
+    pub display: bool,
+    pub items: HashMap<String, Item>
+}
+
+impl Actor {
+    pub fn add_item(&mut self, item: Item) {
+        self.items.insert(item.keyword.clone(), item);
+    }
 }

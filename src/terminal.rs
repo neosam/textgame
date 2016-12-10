@@ -134,6 +134,18 @@ pub fn cmd_move_player() -> CommandFn {
         Ok(false)
     })
 }
+pub fn cmd_take() -> CommandFn {
+    Box::new(|mut game| {
+        let item_key = input_string("Item: ")?;
+        let player_ref = game.player_ref.clone();
+        game.player_room_mut().actor_take(
+            &player_ref,
+            &item_key
+        )?;
+        Ok(false)
+    })
+}
+
 pub fn cmd_edit_room() -> CommandFn {
     Box::new(|mut game| {
         let title = input_string("Room title: ")?;

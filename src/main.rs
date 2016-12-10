@@ -40,6 +40,7 @@ fn main() {
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());
     terminal.commands.insert("lookitem".to_string(), cmd_look_item());
+    terminal.commands.insert("take".to_string(), cmd_take());
     terminal.commands.insert("quit".to_string(), cmd_quit());
     terminal.commands.insert("roomref".to_string(), cmd_room_ref());
     terminal.commands.insert("addexit".to_string(), cmd_add_exit());
