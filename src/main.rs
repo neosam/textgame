@@ -25,8 +25,8 @@ fn main() {
     {
         let room_ref = game.room_ref;
         let mut game_room = game.room_mut(room_ref);
-        game_room.room().title = "Test Room".to_string();
-        game_room.room().description = "This is a room".to_string();
+        game_room.title = "Test Room".to_string();
+        game_room.description = "This is a room".to_string();
         let mut actor = Actor::default();
         actor.name = "Hero".to_string();
         game_room.add_actor(actor);
@@ -34,7 +34,7 @@ fn main() {
         item.keyword = "doll".to_string();
         item.label = "A doll".to_string();
         item.description = "A beautiful doll".to_string();
-        game_room.room().add_item(item);
+        game_room.add_item(item);
     }
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());

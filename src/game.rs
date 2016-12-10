@@ -1,29 +1,28 @@
 use holder::*;
 use actor::*;
 use room::*;
-use base::{RoomKey, ActorKey, Watchable};
+use base::{RoomKey, Watchable};
+use gameerror::*;
+use std::result::Result;
+use std::error::Error;
 
 
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Game {
     pub room_ref: RoomKey,
-    pub player_ref: ActorKey,
+    pub player_ref: String,
     pub rooms: Holder<Room, RoomKey>,
-    pub actors: Holder<Actor, ActorKey>
 }
 
 impl Game {
     pub fn new() -> Self {
         let mut room_holder: Holder<Room, RoomKey> = Holder::default();
-        let mut actor_holder: Holder<Actor, ActorKey> = Holder::default();
         let room_ref = room_holder.add(Room::default());
-        let actor_ref = actor_holder.add(Actor::default());
         Game {
             room_ref: room_ref,
-            player_ref: actor_ref,
+            player_ref: "you".to_string(),
             rooms: room_holder,
-            actors: actor_holder
         }
     }
 
@@ -31,110 +30,65 @@ impl Game {
         self.rooms.add(room)
     }
 
-    pub fn room_ref<'a>(&'a self, id: RoomKey) -> RoomGame<'a> {
-        RoomGame {
-            room: self.rooms.get(id),
-            game: self
-        }
+    pub fn room_ref(&self, id: RoomKey) -> &Room {
+        self.rooms.get(id)
     }
-    pub fn room_mut<'a>(&'a mut self, id: RoomKey) -> RoomGameMut<'a> {
-        RoomGameMut {
-            room_key: id,
-            game: self
-        }
+    pub fn room_mut(&mut self, id: RoomKey) -> &mut Room {
+        self.rooms.get_mut(id)
     }
 
-    pub fn player_room<'a>(&'a self) -> RoomGame<'a> {
+    pub fn player_room(&self) -> &Room {
         self.room_ref(self.room_ref)
     }
-    pub fn player_room_mut<'a>(&'a mut self) -> RoomGameMut<'a> {
+    pub fn player_room_mut(&mut self) -> &mut Room {
         let room_ref = self.room_ref;
         self.room_mut(room_ref)
     }
 
-    pub fn remove_actor_all_rooms(&mut self, key: ActorKey) {
-        for room in self.rooms.items.iter_mut() {
-            let new_actors = room.actors.iter()
-                .map(|actor_ref| *actor_ref)
-                .filter(|actor_ref| *actor_ref != key)
-                .collect();
-            room.actors = new_actors;
-        }
-    }
-    pub fn warp_actor(&mut self, actor_key: ActorKey, room_key: RoomKey) {
-        self.remove_actor_all_rooms(actor_key);
-        self.rooms.get_mut(room_key).actors.push(actor_key);
+    pub fn warp_actor(&mut self, actor_key: String, from_room_key: RoomKey, to_room_key: RoomKey)
+            -> Result<(), Box<Error>> {
+        let actor: Actor = {
+            let mut from_room = self.room_mut(from_room_key);
+            from_room.actors.remove(&actor_key)
+                .ok_or(GameError::GeneralError("From room key not found".to_string()))?
+        };
+        let mut to_room = self.room_mut(to_room_key);
+        to_room.add_actor(actor);
+        Ok(())
     }
 }
 
-pub struct RoomGame<'a> {
-    pub room: &'a Room,
-    pub game: &'a Game
-}
-impl<'a> RoomGame<'a> {
-    pub fn room_exits(&'a self) -> impl Iterator<Item=&'a Exit> + 'a {
-        Box::new(self.room.exits.iter())
-    }
-    pub fn actors(&'a self) -> impl Iterator<Item=(ActorKey, &'a Actor)> + 'a {
-        self.room.actors
-            .iter()
-            .map(move | actor_key | (*actor_key, self.game.actors.get(*actor_key)))
-    }
-}
-
-pub struct RoomGameMut<'a> {
-    pub room_key: RoomKey,
-    pub game: &'a mut Game
-}
-impl<'a> RoomGameMut<'a> {
-    pub fn room(&mut self) -> &mut Room {
-        self.game.rooms.get_mut(self.room_key)
-    }
-
-    pub fn as_ref<'b>(&'b self) -> RoomGame<'b> {
-        RoomGame::<'b> {
-            room: self.game.rooms.get(self.room_key),
-            game: self.game
-        }
-    }
-
-    pub fn add_actor(&mut self, a: Actor) {
-        let actor_key = self.game.actors.add(a);
-        self.room().actors.push(actor_key)
-    }
-}
-
-impl<'a> Watchable for RoomGame<'a> {
+impl Watchable for Room {
     fn watch(&self) -> String {
         let mut res = String::with_capacity(2048);
-        res.push_str(&self.room.title);
+        res.push_str(&self.title);
         res.push_str("\n");
-        res.push_str(&self.room.description);
+        res.push_str(&self.description);
         res.push_str("\n");
-        if !self.room.items.is_empty() {
+        if !self.items.is_empty() {
             res.push_str("Items: ");
             res.push_str(
-                &self.room.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
+                &self.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
                     acc.push_str(keyword);
                     acc
                 })
             );
             res.push('\n');
         }
-        if !self.room.actors.is_empty() {
+        if !self.actors.is_empty() {
             res.push_str("Actors: ");
             res.push_str(
-                &self.actors().fold(String::new(), |mut acc, (_, actor)| {
-                    acc.push_str(&actor.name.to_string());
+                &self.actors.iter().fold(String::new(), |mut acc, (key, _)| {
+                    acc.push_str(key);
                     acc
                 })
             );
             res.push('\n');
         }
-        if !self.room.exits.is_empty() {
+        if !self.exits.is_empty() {
             res.push_str("Exits: ");
             res.push_str(
-                &self.room.exits.iter().fold(String::new(), |mut acc, exit| {
+                &self.exits.iter().fold(String::new(), |mut acc, exit| {
                     acc.push_str(&exit.label);
                     acc.push_str(" ");
                     acc

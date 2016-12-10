@@ -1,7 +1,7 @@
 use base::RoomKey;
-use base::ActorKey;
 use std::collections::HashMap;
 use item::Item;
+use actor::Actor;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Exit {
@@ -14,7 +14,7 @@ pub struct Room {
     pub title: String,
     pub description: String,
     pub exits: Vec<Exit>,
-    pub actors: Vec<ActorKey>,
+    pub actors: HashMap<String, Actor>,
     pub items: HashMap<String, Item>
 }
 
@@ -43,5 +43,9 @@ impl Room {
     }
     pub fn get_item(&self, keyword: &str) -> Option<&Item> {
         self.items.get(keyword)
+    }
+
+    pub fn add_actor(&mut self, actor: Actor) {
+        self.actors.insert(actor.keyword.clone(), actor);
     }
 }
