@@ -54,4 +54,7 @@ impl Room {
     pub fn add_item(&mut self, item: Item) {
         self.items.insert(item.keyword.clone(), item);
     }
+    pub fn get_item(&self, keyword: &str) -> Option<&Item> {
+        self.items.get(keyword)
+    }
 }

@@ -12,6 +12,7 @@ use serde_json;
 
 use room::*;
 use base::*;
+use base::Watchable;
 
 pub type CommandFn = Box<Fn(&mut Game) -> result::Result<bool, Box<Error>>>;
 
@@ -78,6 +79,16 @@ impl Terminal {
 pub fn cmd_look() -> CommandFn {
     Box::new(|game| {
         println!("{}", game.player_room().watch());
+        Ok(false)
+    })
+}
+pub fn cmd_look_item() -> CommandFn {
+    Box::new(|game| {
+        let keyword = input_string("Item: ")?;
+        let room: &Room = game.player_room().room;
+        let item = room.get_item(&keyword)
+            .ok_or(GameError::GeneralError("Keyword not found".to_string()))?;
+        println!("{}", item.watch());
         Ok(false)
     })
 }
