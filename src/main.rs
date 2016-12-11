@@ -9,6 +9,7 @@ pub mod gameerror;
 #[macro_use]
 pub mod holder;
 pub mod base;
+pub mod fight;
 pub mod item;
 pub mod actor;
 pub mod room;

@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use item::Item;
 use base::Watchable;
+use fight::Fight;
+use fight::DamageRes;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Container {
@@ -19,10 +21,23 @@ impl Default for Container {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
+pub struct Attribute {
+    pub value: u32
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ActorAttributes {
+    pub strength: Attribute,
+    pub attack: Attribute,
+    pub defence: Attribute,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Actor {
     pub keyword: String,
     pub name: String,
     pub health: Container,
+    pub attributes: ActorAttributes,
     pub visible: bool,
     pub display: bool,
     pub items: HashMap<String, Item>
@@ -52,5 +67,22 @@ impl Watchable for Actor {
             res.push('\n');
         }
         res
+    }
+}
+
+impl Fight for Actor {
+    fn get_attack(&self) -> u32 {
+        self.attributes.attack.value
+    }
+    fn get_defence(&self) -> u32 {
+        self.attributes.defence.value
+    }
+    fn damage(&mut self, damage: u32) -> DamageRes {
+        if damage < self.health.value {
+            self.health.value -= damage;
+            DamageRes::Default
+        } else {
+            DamageRes::Dead
+        }
     }
 }
