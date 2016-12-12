@@ -13,6 +13,7 @@ use serde_json;
 use room::*;
 use base::*;
 use base::Watchable;
+use fight::DamageRes;
 
 pub type CommandFn = Box<Fn(&mut Game) -> result::Result<bool, Box<Error>>>;
 
@@ -163,6 +164,20 @@ pub fn cmd_drop() -> CommandFn {
             &player_ref,
             &item_key
         )?;
+        Ok(false)
+    })
+}
+
+pub fn cmd_attack() -> CommandFn {
+    Box::new(|mut game| {
+        let actor_key = input_string("Actor: ")?;
+        let player_ref = game.player_ref.clone();
+        let mut room = game.player_room_mut();
+        match room.attack(&player_ref, &actor_key)? {
+            DamageRes::NoDamage => println!("No damage"),
+            DamageRes::Default(damage) => println!("Damage: {}", damage),
+            DamageRes::Dead => println!("Dead")
+        };
         Ok(false)
     })
 }

@@ -4,7 +4,7 @@ use base::Watchable;
 use fight::Fight;
 use fight::DamageRes;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Container {
     pub value: u32,
     pub max: u32
@@ -20,19 +20,19 @@ impl Default for Container {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Attribute {
     pub value: u32
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ActorAttributes {
     pub strength: Attribute,
     pub attack: Attribute,
     pub defence: Attribute,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Actor {
     pub keyword: String,
     pub name: String,
@@ -80,9 +80,10 @@ impl Fight for Actor {
     fn damage(&mut self, damage: u32) -> DamageRes {
         if damage < self.health.value {
             self.health.value -= damage;
-            DamageRes::Default
+            DamageRes::Default(damage)
         } else {
             DamageRes::Dead
         }
     }
 }
+

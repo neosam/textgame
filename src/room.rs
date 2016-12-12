@@ -5,6 +5,8 @@ use actor::Actor;
 use gameerror::GameError;
 use std::result::Result;
 use std::error::Error;
+use fight::Fight;
+use fight::DamageRes;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Exit {
@@ -71,5 +73,13 @@ impl Room {
         };
         self.add_item(item);
         Ok(())
+    }
+
+    pub fn attack(&mut self, attacker_key: &str, defender: &str) -> Result<DamageRes, Box<Error>> {
+        let attacker: Actor = self.get_actor(attacker_key)
+                .ok_or(GameError::GeneralError("Attacker not found".to_string()))?.clone();
+        let defender = self.actors.get_mut(defender)
+            .ok_or(GameError::GeneralError("Defender not found".to_string()))?;
+        Ok(defender.got_hit(&attacker))
     }
 }

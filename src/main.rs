@@ -31,7 +31,15 @@ fn main() {
         let mut actor = Actor::default();
         actor.keyword = "you".to_string();
         actor.name = "Hero".to_string();
+        actor.attributes.attack.value = 20;
         game_room.add_actor(actor);
+        let mut actor2 = Actor::default();
+        actor2.keyword = "somebody".to_string();
+        actor2.name = "Somebody".to_string();
+        actor2.attributes.defence.value = 15;
+        actor2.health.max = 100;
+        actor2.health.value =100;
+        game_room.add_actor(actor2);
         let mut item = Item::default();
         item.keyword = "doll".to_string();
         item.label = "A doll".to_string();
@@ -44,6 +52,7 @@ fn main() {
     terminal.commands.insert("lookactor".to_string(), cmd_look_actor());
     terminal.commands.insert("take".to_string(), cmd_take());
     terminal.commands.insert("drop".to_string(), cmd_drop());
+    terminal.commands.insert("attack".to_string(), cmd_attack());
     terminal.commands.insert("quit".to_string(), cmd_quit());
     terminal.commands.insert("roomref".to_string(), cmd_room_ref());
     terminal.commands.insert("addexit".to_string(), cmd_add_exit());

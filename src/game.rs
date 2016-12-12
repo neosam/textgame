@@ -70,6 +70,7 @@ impl Watchable for Room {
             res.push_str(
                 &self.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
                     acc.push_str(keyword);
+                    acc.push(' ');
                     acc
                 })
             );
@@ -80,6 +81,7 @@ impl Watchable for Room {
             res.push_str(
                 &self.actors.iter().fold(String::new(), |mut acc, (key, _)| {
                     acc.push_str(key);
+                    acc.push(' ');
                     acc
                 })
             );

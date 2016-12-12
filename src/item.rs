@@ -1,6 +1,6 @@
 use base::Watchable;
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Item {
     pub keyword: String,
     pub label: String,
