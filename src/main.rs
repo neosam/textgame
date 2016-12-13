@@ -38,7 +38,7 @@ fn main() {
         actor2.name = "Somebody".to_string();
         actor2.attributes.defence.value = 15;
         actor2.health.max = 100;
-        actor2.health.value =100;
+        actor2.health.value = 10;
         game_room.add_actor(actor2);
         let mut item = Item::default();
         item.keyword = "doll".to_string();

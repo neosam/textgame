@@ -75,11 +75,31 @@ impl Room {
         Ok(())
     }
 
-    pub fn attack(&mut self, attacker_key: &str, defender: &str) -> Result<DamageRes, Box<Error>> {
-        let attacker: Actor = self.get_actor(attacker_key)
+    pub fn attack(&mut self, attacker_key: &str, defender_key: &str)
+            -> Result<DamageRes, Box<Error>> {
+        let res = {
+            let attacker: Actor = self.get_actor(attacker_key)
                 .ok_or(GameError::GeneralError("Attacker not found".to_string()))?.clone();
-        let defender = self.actors.get_mut(defender)
-            .ok_or(GameError::GeneralError("Defender not found".to_string()))?;
-        Ok(defender.got_hit(&attacker))
+            let defender = self.actors.get_mut(defender_key)
+                .ok_or(GameError::GeneralError("Defender not found".to_string()))?;
+            defender.got_hit(&attacker)
+        };
+        match res {
+            DamageRes::Dead => self.actor_to_corpse(defender_key)?,
+            _ => ()
+        }
+        Ok(res)
+    }
+
+    pub fn actor_to_corpse(&mut self, actor_key: &str) -> Result<(), Box<Error>> {
+        let actor = self.actors.remove(actor_key)
+            .ok_or(GameError::GeneralError("Could not remove actor for dying".to_string()))?;
+        let corpse = Item {
+            keyword: format!("{}_corpse", actor_key),
+            label: format!("{}'s corpse", actor.name),
+            description: format!("This is a dead body")
+        };
+        self.add_item(corpse);
+        Ok(())
     }
 }
