@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use item::Item;
 use base::Watchable;
-use fight::Fight;
+use fight::{Attacker, Defender, Fighter};
 use fight::DamageRes;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -70,10 +70,13 @@ impl Watchable for Actor {
     }
 }
 
-impl Fight for Actor {
+impl Attacker for Actor {
     fn get_attack(&self) -> u32 {
         self.attributes.attack.value
     }
+}
+
+impl Defender for Actor {
     fn get_defence(&self) -> u32 {
         self.attributes.defence.value
     }
@@ -86,4 +89,6 @@ impl Fight for Actor {
         }
     }
 }
+
+impl Fighter for Actor {}
 
