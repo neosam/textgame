@@ -15,6 +15,7 @@ pub mod actor;
 pub mod room;
 pub mod game;
 pub mod terminal;
+pub mod worldgen;
 
 use game::*;
 use actor::*;

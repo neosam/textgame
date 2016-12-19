@@ -31,7 +31,7 @@ impl<T, K: HolderKey> Holder<T, K> {
 #[macro_export]
 macro_rules! key_gen {
     ($name:ident) => (
-        #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Default)]
+        #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Default, Hash)]
         pub struct $name(usize);
         impl HolderKey for $name {
             fn new(i: usize) -> Self { $name(i) }

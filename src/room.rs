@@ -30,24 +30,14 @@ impl Room {
         room
     }
 
-    pub fn add_exit(&mut self, exit: Exit) {
-        self.exits.insert(exit.label.clone(), exit);
-    }
-
     pub fn get_exit(&self, direction: String) -> Option<&Exit> {
         self.exits.get(&direction)
     }
 
-    pub fn add_item(&mut self, item: Item) {
-        self.items.insert(item.keyword.clone(), item);
-    }
     pub fn get_item(&self, keyword: &str) -> Option<&Item> {
         self.items.get(keyword)
     }
 
-    pub fn add_actor(&mut self, actor: Actor) {
-        self.actors.insert(actor.keyword.clone(), actor);
-    }
     pub fn get_actor(&self, keyword: &str) -> Option<&Actor> {
         self.actors.get(keyword)
     }
@@ -101,5 +91,30 @@ impl Room {
         };
         self.add_item(corpse);
         Ok(())
+    }
+}
+
+
+/// Setter for easy Room setup
+impl Room {
+    pub fn title<S: Into<String>>(&mut self, title: S) -> &mut Room {
+        self.title = title.into();
+        self
+    }
+    pub fn description<S: Into<String>>(&mut self, description: S) -> &mut Room {
+        self.description = description.into();
+        self
+    }
+    pub fn add_actor(&mut self, actor: Actor) -> &mut Room {
+        self.actors.insert(actor.keyword.clone(), actor);
+        self
+    }
+    pub fn add_item(&mut self, item: Item) -> &mut Room {
+        self.items.insert(item.keyword.clone(), item);
+        self
+    }
+    pub fn add_exit(&mut self, exit: Exit) -> &mut Room {
+        self.exits.insert(exit.label.clone(), exit);
+        self
     }
 }
