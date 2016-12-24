@@ -139,4 +139,32 @@ impl Lang for LangDe {
     fn command_look(&self) -> String {
         "schau".to_string()
     }
+
+    fn command_lookitem(&self) -> String {
+        "gegenstand".to_string()
+    }
+
+    fn command_lookactor(&self) -> String {
+        "akteur".to_string()
+    }
+
+    fn command_take(&self) -> String {
+        "nimm".to_string()
+    }
+
+    fn command_drop(&self) -> String {
+        "lege".to_string()
+    }
+
+    fn command_attack(&self) -> String {
+        "angriff".to_string()
+    }
+
+    fn command_quit(&self) -> String {
+        "quit".to_string()
+    }
+
+    fn command_go(&self) -> String {
+        "gehe".to_string()
+    }
 }
