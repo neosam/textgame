@@ -16,12 +16,24 @@ pub trait Lang {
         "Item: ".to_string()
     }
 
+    fn items_prompt(&self) -> String {
+        "Items: ".to_string()
+    }
+
     fn room_key_prompt(&self) -> String {
         "Room key: ".to_string()
     }
 
+    fn exits_prompt(&self) -> String {
+        "Exits: ".to_string()
+    }
+
     fn actor_prompt(&self) -> String {
         "Actor: ".to_string()
+    }
+
+    fn actors_prompt(&self) -> String {
+        "Actors: ".to_string()
     }
 
     fn room_key_response(&self, room_key: &RoomKey) -> String {
@@ -77,5 +89,53 @@ pub trait Lang {
 
     fn invalid_characters_response(&self) -> String {
         "Invalid characters found".to_string()
+    }
+
+    fn player_id(&self) -> String {
+        "you".to_string()
+    }
+
+    fn actor_in_room_nof_found_response(&self) -> String {
+        "Actor in room not found".to_string()
+    }
+
+    fn actor_key_not_found_response(&self) -> String {
+        "Actor key nof found".to_string()
+    }
+
+    fn item_key_not_found_response(&self) -> String {
+        "Item key not found".to_string()
+    }
+
+    fn actor_not_found_response(&self) -> String {
+        "Actor not found".to_string()
+    }
+
+    fn item_not_found_response(&self) -> String {
+        "Item nof found".to_string()
+    }
+
+    fn attacker_not_found_response(&self) -> String {
+        "Attacker nof found response".to_string()
+    }
+
+    fn defender_nof_found_response(&self) -> String {
+        "Defender nof found response".to_string()
+    }
+
+    fn cannot_remove_actor_die_error(&self) -> String {
+        "Cannot remove actor to die".to_string()
+    }
+
+    fn to_corpse_keyword(&self, keyword: &str) -> String {
+        format!("{}_corpse", keyword)
+    }
+
+    fn to_corpse_label(&self, name: &str) -> String {
+        format!("{}'s corpse", name)
+    }
+
+    fn dead_body_description(&self) -> String {
+        "This is a dead body".to_string()
     }
 }

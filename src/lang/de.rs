@@ -16,7 +16,11 @@ impl Lang for LangDe {
     }
 
     fn item_prompt(&self) -> String {
-        "Item: ".to_string()
+        "Gegenstand: ".to_string()
+    }
+
+    fn items_prompt(&self) -> String {
+        "Gegenstände: ".to_string()
     }
 
     fn room_key_prompt(&self) -> String {
@@ -24,7 +28,11 @@ impl Lang for LangDe {
     }
 
     fn actor_prompt(&self) -> String {
-        "Actor: ".to_string()
+        "Akteur: ".to_string()
+    }
+
+    fn actors_prompt(&self) -> String {
+        "Akteure: ".to_string()
     }
 
     fn room_key_response(&self, room_key: &RoomKey) -> String {

@@ -22,7 +22,7 @@ pub trait Defender {
     fn got_hit<A: Attacker>(&mut self, attacker: &A) -> DamageRes {
         let attack = attacker.get_attack();
         let defence = self.get_defence();
-        println!("Attacker: {}, Defender: {}", attack, defence);
+        println!("Debug: Attacker: {}, Defender: {}", attack, defence);
         if defence >= attack {
             return DamageRes::NoDamage;
         }

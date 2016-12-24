@@ -3,6 +3,7 @@ use item::Item;
 use base::Watchable;
 use fight::{Attacker, Defender, Fighter};
 use fight::DamageRes;
+use lang::t;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Container {
@@ -55,7 +56,7 @@ impl Watchable for Actor {
         res.push_str(&self.name);
         res.push('\n');
         if !self.items.is_empty() {
-            res.push_str("Items: ");
+            res.push_str(&t().item_prompt());
             res.push_str(
                 &self.items.iter()
                     .fold(String::new(), | mut acc, (key, _) | {
