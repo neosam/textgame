@@ -21,7 +21,7 @@ use game::*;
 use actor::*;
 use terminal::*;
 use item::Item;
-use lang::lang;
+use lang::t;
 
 fn main() {
     let mut game = Game::new();
@@ -49,7 +49,7 @@ fn main() {
         game_room.add_item(item);
     }
     lang::init();
-    println!("{}", lang().welcome());
+    println!("{}", t().welcome());
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());
     terminal.commands.insert("lookitem".to_string(), cmd_look_item());
