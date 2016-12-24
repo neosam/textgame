@@ -135,4 +135,8 @@ impl Lang for LangDe {
     fn dead_body_description(&self) -> String {
         "Das ist ein toter Körper".to_string()
     }
+
+    fn command_look(&self) -> String {
+        "schau".to_string()
+    }
 }

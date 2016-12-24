@@ -138,4 +138,44 @@ pub trait Lang {
     fn dead_body_description(&self) -> String {
         "This is a dead body".to_string()
     }
+
+    fn command_look(&self) -> String {
+        "look".to_string()
+    }
+
+    fn command_lookitem(&self) -> String {
+        "lookitem".to_string()
+    }
+
+    fn command_lookactor(&self) -> String {
+        "lookactor".to_string()
+    }
+
+    fn command_take(&self) -> String {
+        "take".to_string()
+    }
+
+    fn command_drop(&self) -> String {
+        "drop".to_string()
+    }
+
+    fn command_attack(&self) -> String {
+        "attack".to_string()
+    }
+
+    fn command_quit(&self) -> String {
+        "quit".to_string()
+    }
+
+    fn command_go(&self) -> String {
+        "go".to_string()
+    }
+
+    fn command_save(&self) -> String {
+        "save".to_string()
+    }
+
+    fn command_load(&self) -> String {
+        "load".to_string()
+    }
 }
