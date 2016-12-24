@@ -48,7 +48,7 @@ fn main() {
         item.description = "A beautiful doll".to_string();
         game_room.add_item(item);
     }
-    lang::set_locale("de");
+    lang::init();
     println!("{}", lang().welcome());
     let mut terminal = Terminal::new(game);
     terminal.commands.insert("look".to_string(), cmd_look());

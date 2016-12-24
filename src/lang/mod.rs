@@ -1,5 +1,6 @@
 use base::RoomKey;
 use holder::HolderKey;
+use std::env;
 
 pub trait Lang {
     fn welcome(&self) -> String {
@@ -106,6 +107,12 @@ pub fn set_locale(lang: &str) {
             set_lang(LANG_EN)
         }
     }
+}
+
+pub fn init() {
+    let lang = env::var("LANG")
+        .unwrap_or(String::from("en"));
+    set_locale(&lang)
 }
 
 pub fn lang() -> &'static Lang {
