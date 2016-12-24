@@ -86,4 +86,53 @@ impl Lang for LangDe {
     fn invalid_characters_response(&self) -> String {
         "Ungültige Zeichen gefunden".to_string()
     }
+
+
+    fn player_id(&self) -> String {
+        "du".to_string()
+    }
+
+    fn actor_in_room_nof_found_response(&self) -> String {
+        "Akteur nicht im Raum gefunden".to_string()
+    }
+
+    fn actor_key_not_found_response(&self) -> String {
+        "Akteur Schlüsselwort nicht gefunden".to_string()
+    }
+
+    fn item_key_not_found_response(&self) -> String {
+        "Gegenstands Schlüsselwort nicht gefunden".to_string()
+    }
+
+    fn actor_not_found_response(&self) -> String {
+        "Akteur nicht gefunden".to_string()
+    }
+
+    fn item_not_found_response(&self) -> String {
+        "Gegenstand nicht gefunden".to_string()
+    }
+
+    fn attacker_not_found_response(&self) -> String {
+        "Angreifer nicht gefunden".to_string()
+    }
+
+    fn defender_nof_found_response(&self) -> String {
+        "Verteidiger nicht gefunden".to_string()
+    }
+
+    fn cannot_remove_actor_die_error(&self) -> String {
+        "Kann Akteur nicht zum sterben entfernen".to_string()
+    }
+
+    fn to_corpse_keyword(&self, keyword: &str) -> String {
+        format!("{}_leiche", keyword)
+    }
+
+    fn to_corpse_label(&self, name: &str) -> String {
+        format!("{}s Leiche", name)
+    }
+
+    fn dead_body_description(&self) -> String {
+        "Das ist ein toter Körper".to_string()
+    }
 }
