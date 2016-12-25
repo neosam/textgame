@@ -10,6 +10,12 @@ use std::collections::HashMap;
 use std::mem;
 use serde_json;
 
+use room::*;
+use base::*;
+use base::Watchable;
+use fight::DamageRes;
+use lang::t;
+
 pub type CommandFn = Box<Fn(&mut Game) -> result::Result<bool, Box<Error>>>;
 
 pub fn input_string(prompt: &str) -> result::Result<String, Box<Error>> {
@@ -57,7 +63,7 @@ impl Terminal {
         if let Some(command) = self.commands.get(keyword) {
             command(&mut self.game)
         } else {
-            Err(Box::new(GameError::GeneralError("Command not found".to_string())))
+            Err(Box::new(GameError::GeneralError(t().command_not_found(keyword))))
         }
     }
     pub fn run(&mut self) {
@@ -78,18 +84,38 @@ pub fn cmd_look() -> CommandFn {
         Ok(false)
     })
 }
+pub fn cmd_look_item() -> CommandFn {
+    Box::new(|game| {
+        let keyword = input_string(&t().item_prompt())?;
+        let room: &Room = game.player_room();
+        let item = room.get_item(&keyword)
+            .ok_or(t().keyword_not_found(&keyword))?;
+        println!("{}", item.watch());
+        Ok(false)
+    })
+}
+pub fn cmd_look_actor() -> CommandFn {
+    Box::new(|game| {
+        let keyword = input_string(&t().actor_prompt())?;
+        let room: &Room = game.player_room();
+        let actor = room.get_actor(&keyword)
+            .ok_or(t().keyword_not_found(&keyword))?;
+        println!("{}", actor.watch());
+        Ok(false)
+    })
+}
 pub fn cmd_room_ref() -> CommandFn {
     Box::new(|game| {
-        println!("Room ID: {}", game.room_ref.get());
+        println!("{}", t().room_key_response(&game.room_ref));
         Ok(false)
     })
 }
 pub fn cmd_add_exit() -> CommandFn {
     Box::new(|mut game| {
-        let exit_label = input_string("Exit label: ")?;
-        let room_id = input_string("Room key:  ")?;
+        let exit_label = input_string(&t().exit_label_prompt())?;
+        let room_id = input_string(&t().room_key_prompt())?;
         let room_id: usize = room_id.parse()?;
-        game.player_room_mut().room().exits.push(Exit {
+        game.player_room_mut().add_exit(Exit {
             label: exit_label,
             room_key: RoomKey::new(room_id)
         });
@@ -98,37 +124,76 @@ pub fn cmd_add_exit() -> CommandFn {
 }
 pub fn cmd_add_room() -> CommandFn {
     Box::new(|mut game| {
-        let title = input_string("Room title: ")?;
+        let title = input_string(&t().room_title_prompt())?;
         let key = game.rooms.add(Room::with_title(title));
-        println!("Room key: {}", key.get());
+        println!("{}", t().room_key_response(&key));
         Ok(false)
     })
 }
 pub fn cmd_move_player() -> CommandFn {
     Box::new(|mut game| {
-        let direction = input_string("Exit name: ")?;
+        let direction = input_string(&t().exit_name_prompt())?;
         let room_key = {
-            let exit = game.player_room().room.get_exit(direction);
-            if exit.is_none() {
-                return Err(Box::new(GameError::GeneralError("Exit not found".to_string())));
-            }
-            let exit = exit.unwrap();
+            let exit = game.player_room().get_exit(direction)
+                .ok_or(t().exit_not_found_response())?;
             let dest_room_key = exit.room_key;
             dest_room_key
         };
-        let player_key = game.player_ref;
-        game.warp_actor(player_key, room_key);
+        let player_key = game.player_ref.clone();
+        let from_room_key = game.room_ref;
+        game.warp_actor(player_key, from_room_key, room_key)?;
         game.room_ref = room_key;
         Ok(false)
     })
 }
+pub fn cmd_take() -> CommandFn {
+    Box::new(|mut game| {
+        let item_key = input_string(&t().item_prompt())?;
+        let player_ref = game.player_ref.clone();
+        game.player_room_mut().actor_take(
+            &player_ref,
+            &item_key
+        )?;
+        Ok(false)
+    })
+}
+pub fn cmd_drop() -> CommandFn {
+    Box::new(|mut game| {
+        let item_key = input_string(&t().item_prompt())?;
+        let player_ref = game.player_ref.clone();
+        game.player_room_mut().actor_drop(
+            &player_ref,
+            &item_key
+        )?;
+        Ok(false)
+    })
+}
+
+pub fn cmd_attack() -> CommandFn {
+    Box::new(|mut game| {
+        let actor_key = input_string(&t().actor_prompt())?;
+        let player_ref = game.player_ref.clone();
+        let mut room = game.player_room_mut();
+        match room.attack(&player_ref, &actor_key)? {
+            DamageRes::NoDamage =>
+                println!("{}", t().no_damage_response()),
+            DamageRes::Default(damage) =>
+                println!("{}", t().damage_response(damage)),
+            DamageRes::Dead =>
+                println!("{}", t().dead_response())
+        };
+        Ok(false)
+    })
+}
+
 pub fn cmd_edit_room() -> CommandFn {
     Box::new(|mut game| {
-        let title = input_string("Room title: ")?;
-        println!("Type multiple lines and stop with the keyword end");
-        let description = read_multiline("description: ", "end")?;
+        let title = input_string(&t().room_title_prompt())?;
+        println!("{}", t().multiline_info());
+        let description = read_multiline(
+            &t().description_prompt(),
+            &t().default_multiline_term())?;
         let mut room = game.player_room_mut();
-        let mut room = room.room();
         room.title = title;
         room.description = description;
         Ok(false)
@@ -137,15 +202,15 @@ pub fn cmd_edit_room() -> CommandFn {
 
 pub fn cmd_save() -> CommandFn {
     Box::new(|game| {
-        println!("Enter name.  You may only use letters and digits.");
-        let mut name = input_string("Game name: ")?;
+        println!("{}", t().game_name_info());
+        let mut name = input_string(&t().game_name_prompt())?;
         let failed_validation = name.chars().find(|c|
             !(*c >= 'a' && *c <= 'z' ||
                 *c >= 'A' && *c <= 'Z' ||
                 *c >= '0' && *c <= '9'));
         name.push_str(".json");
         if failed_validation.is_some() {
-            Err(Box::new(GameError::GeneralError("Found invalid characters".to_string())))
+            Err(Box::new(GameError::GeneralError(t().invalid_characters_response())))
         } else {
             let string = serde_json::to_string(game)?;
             let mut out = File::create(name)?;
@@ -156,15 +221,15 @@ pub fn cmd_save() -> CommandFn {
 }
 pub fn cmd_load() -> CommandFn {
     Box::new(|game| {
-        println!("Enter name.  You may only use letters and digits.");
-        let mut name = input_string("Game name: ")?;
+        println!("{}", t().game_name_info());
+        let mut name = input_string(&t().game_name_prompt())?;
         let failed_validation = name.chars().find(|c|
             !(*c >= 'a' && *c <= 'z' ||
                 *c >= 'A' && *c <= 'Z' ||
                 *c >= '0' && *c <= '9'));
         name.push_str(".json");
         if failed_validation.is_some() {
-            Err(Box::new(GameError::GeneralError("Found invalid characters".to_string())))
+            Err(Box::new(GameError::GeneralError(t().invalid_characters_response())))
         } else {
             let file = File::open(name)?;
             let mut load_game = serde_json::from_reader(file)?;
