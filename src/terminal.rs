@@ -16,7 +16,7 @@ use base::Watchable;
 use fight::DamageRes;
 use lang::t;
 
-pub type CommandFn = Box<Fn(&mut Game) -> result::Result<bool, Box<Error>>>;
+pub type CommandFn = Box<Fn(CommandArg) -> result::Result<bool, Box<Error>>>;
 
 pub fn input_string(prompt: &str) -> result::Result<String, Box<Error>> {
     print!("{}", prompt);
@@ -45,6 +45,11 @@ pub struct Terminal {
     pub commands: HashMap<String, CommandFn>,
     pub prompt: String
 }
+
+pub struct CommandArg<'a> {
+    pub game: &'a mut Game
+}
+
 impl Terminal {
     pub fn new(game: Game) -> Self {
         Terminal {
@@ -61,7 +66,10 @@ impl Terminal {
         let mut keywords = line.split(" ");
         let keyword = keywords.next().unwrap();
         if let Some(command) = self.commands.get(keyword) {
-            command(&mut self.game)
+            let args = CommandArg {
+                game: &mut self.game
+            };
+            command(args)
         } else {
             Err(Box::new(GameError::GeneralError(t().command_not_found(keyword))))
         }
@@ -79,15 +87,15 @@ impl Terminal {
 }
 
 pub fn cmd_look() -> CommandFn {
-    Box::new(|game| {
-        println!("{}", game.player_room().watch());
+    Box::new(|term| {
+        println!("{}", term.game.player_room().watch());
         Ok(false)
     })
 }
 pub fn cmd_look_item() -> CommandFn {
-    Box::new(|game| {
+    Box::new(|term| {
         let keyword = input_string(&t().item_prompt())?;
-        let room: &Room = game.player_room();
+        let room: &Room = term.game.player_room();
         let item = room.get_item(&keyword)
             .ok_or(t().keyword_not_found(&keyword))?;
         println!("{}", item.watch());
@@ -95,9 +103,9 @@ pub fn cmd_look_item() -> CommandFn {
     })
 }
 pub fn cmd_look_actor() -> CommandFn {
-    Box::new(|game| {
+    Box::new(|term| {
         let keyword = input_string(&t().actor_prompt())?;
-        let room: &Room = game.player_room();
+        let room: &Room = term.game.player_room();
         let actor = room.get_actor(&keyword)
             .ok_or(t().keyword_not_found(&keyword))?;
         println!("{}", actor.watch());
@@ -105,17 +113,17 @@ pub fn cmd_look_actor() -> CommandFn {
     })
 }
 pub fn cmd_room_ref() -> CommandFn {
-    Box::new(|game| {
-        println!("{}", t().room_key_response(&game.room_ref));
+    Box::new(|term| {
+        println!("{}", t().room_key_response(&term.game.room_ref));
         Ok(false)
     })
 }
 pub fn cmd_add_exit() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
         let exit_label = input_string(&t().exit_label_prompt())?;
         let room_id = input_string(&t().room_key_prompt())?;
         let room_id: usize = room_id.parse()?;
-        game.player_room_mut().add_exit(Exit {
+        term.game.player_room_mut().add_exit(Exit {
             label: exit_label,
             room_key: RoomKey::new(room_id)
         });
@@ -123,15 +131,16 @@ pub fn cmd_add_exit() -> CommandFn {
     })
 }
 pub fn cmd_add_room() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
         let title = input_string(&t().room_title_prompt())?;
-        let key = game.rooms.add(Room::with_title(title));
+        let key = term.game.rooms.add(Room::with_title(title));
         println!("{}", t().room_key_response(&key));
         Ok(false)
     })
 }
 pub fn cmd_move_player() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
+        let mut game = &mut term.game;
         let direction = input_string(&t().exit_name_prompt())?;
         let room_key = {
             let exit = game.player_room().get_exit(direction)
@@ -147,7 +156,8 @@ pub fn cmd_move_player() -> CommandFn {
     })
 }
 pub fn cmd_take() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
+        let mut game = &mut term.game;
         let item_key = input_string(&t().item_prompt())?;
         let player_ref = game.player_ref.clone();
         game.player_room_mut().actor_take(
@@ -158,7 +168,8 @@ pub fn cmd_take() -> CommandFn {
     })
 }
 pub fn cmd_drop() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
+        let mut game = &mut term.game;
         let item_key = input_string(&t().item_prompt())?;
         let player_ref = game.player_ref.clone();
         game.player_room_mut().actor_drop(
@@ -170,7 +181,8 @@ pub fn cmd_drop() -> CommandFn {
 }
 
 pub fn cmd_attack() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
+        let mut game = &mut term.game;
         let actor_key = input_string(&t().actor_prompt())?;
         let player_ref = game.player_ref.clone();
         let mut room = game.player_room_mut();
@@ -187,7 +199,8 @@ pub fn cmd_attack() -> CommandFn {
 }
 
 pub fn cmd_edit_room() -> CommandFn {
-    Box::new(|mut game| {
+    Box::new(|mut term| {
+        let mut game = &mut term.game;
         let title = input_string(&t().room_title_prompt())?;
         println!("{}", t().multiline_info());
         let description = read_multiline(
@@ -201,7 +214,8 @@ pub fn cmd_edit_room() -> CommandFn {
 }
 
 pub fn cmd_save() -> CommandFn {
-    Box::new(|game| {
+    Box::new(|term| {
+        let game = &term.game;
         println!("{}", t().game_name_info());
         let mut name = input_string(&t().game_name_prompt())?;
         let failed_validation = name.chars().find(|c|
@@ -220,7 +234,8 @@ pub fn cmd_save() -> CommandFn {
     })
 }
 pub fn cmd_load() -> CommandFn {
-    Box::new(|game| {
+    Box::new(|mut term| {
+        let mut game = term.game;
         println!("{}", t().game_name_info());
         let mut name = input_string(&t().game_name_prompt())?;
         let failed_validation = name.chars().find(|c|
