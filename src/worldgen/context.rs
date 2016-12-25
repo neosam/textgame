@@ -55,6 +55,14 @@ pub struct Context {
 }
 
 impl Context {
+    pub fn new(area_size: Size) -> Self {
+        Context {
+            area_size: area_size,
+            areas: HashMap::new(),
+            global_pos_map: HashMap::new()
+        }
+    }
+
     pub fn room_for_pos_exists(&self, &(area_pos, inner_pos): &GlobalPos) -> bool {
         let area = match self.areas.get(&area_pos) {
             Some(area) => area,

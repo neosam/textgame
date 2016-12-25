@@ -16,6 +16,11 @@ use base::Watchable;
 use fight::DamageRes;
 use lang::t;
 
+static DEFAULT_AREA_WIDTH: u32 = 5;
+static DEFAULT_AREA_HEIGHT: u32 = 5;
+
+use worldgen::worldgen::WorldGen;
+
 pub type CommandFn = Box<Fn(CommandArg) -> result::Result<bool, Box<Error>>>;
 
 pub fn input_string(prompt: &str) -> result::Result<String, Box<Error>> {
@@ -42,12 +47,14 @@ pub fn read_multiline(prompt: &str, term: &str) -> result::Result<String, Box<Er
 
 pub struct Terminal {
     pub game: Game,
+    pub world_gen: WorldGen,
     pub commands: HashMap<String, CommandFn>,
     pub prompt: String
 }
 
 pub struct CommandArg<'a> {
-    pub game: &'a mut Game
+    pub game: &'a mut Game,
+    pub world_gen: &'a mut WorldGen
 }
 
 impl Terminal {
@@ -55,7 +62,8 @@ impl Terminal {
         Terminal {
             game: game,
             commands: HashMap::new(),
-            prompt: "> ".to_string()
+            prompt: "> ".to_string(),
+            world_gen: WorldGen::new((DEFAULT_AREA_WIDTH, DEFAULT_AREA_HEIGHT))
         }
     }
     pub fn step(&mut self) -> result::Result<bool, Box<Error>> {
@@ -67,7 +75,8 @@ impl Terminal {
         let keyword = keywords.next().unwrap();
         if let Some(command) = self.commands.get(keyword) {
             let args = CommandArg {
-                game: &mut self.game
+                game: &mut self.game,
+                world_gen: &mut self.world_gen
             };
             command(args)
         } else {

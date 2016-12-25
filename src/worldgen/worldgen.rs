@@ -17,6 +17,14 @@ pub struct WorldGen {
 
 
 impl WorldGen {
+    /// Return an empty WorldGen.
+    pub fn new(area_size: context::Size) -> Self {
+        WorldGen {
+            context: context::Context::new(area_size),
+            null_room_key: RoomKey::new(0)
+        }
+    }
+
     /// Handles world generation actions when the player moves.
     ///
     /// # Algorithm
