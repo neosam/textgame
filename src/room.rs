@@ -7,6 +7,7 @@ use std::result::Result;
 use std::error::Error;
 use fight::{Attacker, Defender};
 use fight::DamageRes;
+use lang::t;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Exit {
@@ -44,10 +45,10 @@ impl Room {
 
     pub fn actor_take(&mut self, actor_key: &str, item_key: &str) -> Result<(), Box<Error>> {
         if !self.actors.contains_key(actor_key) {
-            return Err(Box::new(GameError::GeneralError("Actor key not found".to_string())));
+            return Err(Box::new(GameError::GeneralError(t().actor_key_not_found_response())))
         }
         if !self.items.contains_key(item_key) {
-            return Err(Box::new(GameError::GeneralError("Item key not found".to_string())));
+            return Err(Box::new(GameError::GeneralError(t().item_key_not_found_response())));
         }
         let item = self.items.remove(item_key).unwrap();
         self.actors.get_mut(actor_key).unwrap().add_item(item);
@@ -57,9 +58,9 @@ impl Room {
     pub fn actor_drop(&mut self, actor_key: &str, item_key: &str) -> Result<(), Box<Error>> {
         let item = {
             let actor = self.actors.get_mut(actor_key)
-                .ok_or(GameError::GeneralError("Actor not found".to_string()))?;
+                .ok_or(t().actor_not_found_response())?;
             actor.items.remove(item_key)
-                .ok_or(GameError::GeneralError("Item not found".to_string()))?
+                .ok_or(t().item_not_found_response())?
         };
         self.add_item(item);
         Ok(())
@@ -69,9 +70,9 @@ impl Room {
             -> Result<DamageRes, Box<Error>> {
         let res = {
             let attacker = self.get_actor(attacker_key)
-                .ok_or(GameError::GeneralError("Attacker not found".to_string()))?.to_attacker();
+                .ok_or(t().attacker_not_found_response())?.to_attacker();
             let defender = self.actors.get_mut(defender_key)
-                .ok_or(GameError::GeneralError("Defender not found".to_string()))?;
+                .ok_or(t().defender_nof_found_response())?;
             defender.got_hit(&attacker)
         };
         match res {
@@ -83,11 +84,11 @@ impl Room {
 
     pub fn actor_to_corpse(&mut self, actor_key: &str) -> Result<(), Box<Error>> {
         let actor = self.actors.remove(actor_key)
-            .ok_or(GameError::GeneralError("Could not remove actor for dying".to_string()))?;
+            .ok_or(t().cannot_remove_actor_die_error())?;
         let corpse = Item {
-            keyword: format!("{}_corpse", actor_key),
-            label: format!("{}'s corpse", actor.name),
-            description: format!("This is a dead body")
+            keyword: t().to_corpse_keyword(actor_key),
+            label: t().to_corpse_label(&actor.name),
+            description: t().dead_body_description()
         };
         self.add_item(corpse);
         Ok(())

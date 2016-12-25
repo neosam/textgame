@@ -2,10 +2,9 @@ use holder::*;
 use actor::*;
 use room::*;
 use base::{RoomKey, Watchable};
-use gameerror::*;
 use std::result::Result;
 use std::error::Error;
-
+use lang::t;
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -21,7 +20,7 @@ impl Game {
         let room_ref = room_holder.add(Room::default());
         Game {
             room_ref: room_ref,
-            player_ref: "you".to_string(),
+            player_ref: t().player_id(),
             rooms: room_holder,
         }
     }
@@ -50,7 +49,7 @@ impl Game {
         let actor: Actor = {
             let mut from_room = self.room_mut(from_room_key);
             from_room.actors.remove(&actor_key)
-                .ok_or(GameError::GeneralError("Actor in from room not found".to_string()))?
+                .ok_or(t().actor_in_room_nof_found_response())?
         };
         let mut to_room = self.room_mut(to_room_key);
         to_room.add_actor(actor);
@@ -66,7 +65,7 @@ impl Watchable for Room {
         res.push_str(&self.description);
         res.push_str("\n");
         if !self.items.is_empty() {
-            res.push_str("Items: ");
+            res.push_str(&t().items_prompt());
             res.push_str(
                 &self.items.iter().fold(String::new(), |mut acc, (keyword, _)| {
                     acc.push_str(keyword);
@@ -77,7 +76,7 @@ impl Watchable for Room {
             res.push('\n');
         }
         if !self.actors.is_empty() {
-            res.push_str("Actors: ");
+            res.push_str(&t().actors_prompt());
             res.push_str(
                 &self.actors.iter().fold(String::new(), |mut acc, (key, _)| {
                     acc.push_str(key);
@@ -88,7 +87,7 @@ impl Watchable for Room {
             res.push('\n');
         }
         if !self.exits.is_empty() {
-            res.push_str("Exits: ");
+            res.push_str(&t().exits_prompt());
             res.push_str(
                 &self.exits.iter().fold(String::new(), |mut acc, (key, _) | {
                     acc.push_str(key);
