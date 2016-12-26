@@ -9,6 +9,7 @@ use std::fs::File;
 use std::collections::HashMap;
 use std::mem;
 use serde_json;
+use actor::Actor;
 
 use room::*;
 use base::*;
@@ -58,13 +59,26 @@ pub struct CommandArg<'a> {
 }
 
 impl Terminal {
-    pub fn new(game: Game) -> Self {
-        Terminal {
+    pub fn new() -> Result<Self, Box<Error>> {
+        let mut game: Game = Game::new();
+        let (mut world_gen, init_pos) =
+            WorldGen::new_and_init((DEFAULT_AREA_WIDTH, DEFAULT_AREA_HEIGHT), &mut game);
+        let init_room_key = world_gen.room_key_at(init_pos)?;
+        let null_room = Room::with_title("Null room".to_string());
+        game.add_room(null_room);
+        let mut player = Actor::default();
+        player.keyword = "you".to_string();
+        player.name = "Hero".to_string();
+        player.attributes.attack.value = 20;
+        game.room_mut(init_room_key).add_actor(player);
+        game.player_ref = "you".to_string();
+        game.room_ref = init_room_key;
+        Ok(Terminal {
             game: game,
             commands: HashMap::new(),
             prompt: "> ".to_string(),
-            world_gen: WorldGen::new((DEFAULT_AREA_WIDTH, DEFAULT_AREA_HEIGHT))
-        }
+            world_gen: world_gen
+        })
     }
     pub fn step(&mut self) -> result::Result<bool, Box<Error>> {
         let line = input_string(&self.prompt)?;

@@ -4,6 +4,8 @@ use worldgen::city::City;
 use game::Game;
 use worldgen::roomgen::RoomGen;
 use holder::HolderKey;
+use std::error::Error;
+use std::result::Result;
 
 
 pub type Pos = (u32, u32);
@@ -29,12 +31,17 @@ pub struct RoomDef {
 pub struct Area {
     pub pos: Pos,
     pub terrain: Terrain,
-    pub rooms: HashMap<Pos, Option<RoomDef>>
+    pub rooms: HashMap<Pos, RoomDef>
 }
 
 impl Area {
-    pub fn gen_room(&mut self, game: &mut Game, inner_pos: Pos) -> RoomDef {
-        unimplemented!();
+    pub fn gen_room(&mut self,
+                    game: &mut Game,
+                    inner_pos: Pos,
+                    null_room: RoomKey) -> Result<RoomDef, Box<Error>> {
+        match self.terrain {
+            Terrain::City(ref mut city) => city.gen_room(game, &inner_pos, null_room)
+        }
     }
 }
 
@@ -56,11 +63,14 @@ pub struct Context {
 
 impl Context {
     pub fn new(area_size: Size) -> Self {
-        Context {
+        let init_area = Area::new_random((0, 0));
+        let mut res = Context {
             area_size: area_size,
             areas: HashMap::new(),
             global_pos_map: HashMap::new()
-        }
+        };
+        res.insert_area(init_area);
+        res
     }
 
     pub fn room_for_pos_exists(&self, &(area_pos, inner_pos): &GlobalPos) -> bool {
@@ -78,5 +88,9 @@ impl Context {
             (area_x + x / width, area_y + y / height),
             (x % width, y % height)
         )
+    }
+
+    pub fn insert_area(&mut self, area: Area) {
+        self.areas.insert(area.pos.clone(), area);
     }
 }

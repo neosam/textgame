@@ -25,6 +25,13 @@ impl WorldGen {
         }
     }
 
+    pub fn new_and_init(area_size: context::Size, game: &mut Game) -> (Self, GlobalPos) {
+        let mut res = WorldGen::new(area_size);
+        let middle = ((0, 0), (area_size.0 / 2, area_size.1 / 2));
+        res.gen_room(game, middle);
+        (res, middle)
+    }
+
     /// Handles world generation actions when the player moves.
     ///
     /// # Algorithm
@@ -70,11 +77,21 @@ impl WorldGen {
         }
 
         let area: &mut Area = self.context.areas.get_mut(&area_pos)
-            .ok_or(GameError::GeneralError("Area not found".to_string()))?;
+            .ok_or("Area not found")?;
         if !area.rooms.contains_key(&inner_pos) {
-            unimplemented!();
+            let room_def = area.gen_room(game, inner_pos, self.null_room_key)?;
+            area.rooms.insert(inner_pos, room_def);
         }
 
         Ok(())
+    }
+
+    pub fn room_key_at(&self, pos: GlobalPos) -> Result<RoomKey, Box<Error>> {
+        let (area_pos, inner_pos) = pos;
+        let area = self.context.areas.get(&area_pos)
+            .ok_or("Area not found")?;
+        let room_def = area.rooms.get(&inner_pos)
+            .ok_or("Room not found")?;
+        Ok(room_def.room_key.clone())
     }
 }

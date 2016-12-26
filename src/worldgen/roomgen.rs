@@ -8,7 +8,6 @@ use game::Game;
 pub trait RoomGen {
     fn gen_room(&mut self,
                 game: &mut Game,
-                area: &context::Area,
                 pos: &context::Pos,
                 null_room_key: RoomKey) -> Result<context::RoomDef, Box<Error>>;
 }
